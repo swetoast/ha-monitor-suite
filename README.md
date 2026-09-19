@@ -1,6 +1,6 @@
 # Monitor Suite for Home Assistant
 
-[![Validate](https://github.com/swetoast/ha-monitor-suite/actions/workflows/validate.yml/badge.svg)](https://github.com/swetoast/ha-monitor-suite/actions/workflows/validate.yml)
+[![Validate](https://github.com/swetoast/ha-monitor-suite/actions/workflows/main.yml/badge.svg)](https://github.com/swetoast/ha-monitor-suite/actions/workflows/main.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
