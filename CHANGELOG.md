@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.12
+
+- Consolidated CPU temperature and frequency into attributes on the CPU usage sensor.
+- Consolidated cooling state into an attribute on the fan speed sensor.
+- Removed the standalone CPU frequency, CPU temperature, and cooling state entities.
+- Added upgrade cleanup for the removed entity-registry entries.
+- Retained dynamic fan icons: `mdi:fan-off` at zero RPM and `mdi:fan` above zero RPM.
+
+## 0.3.11
+
+- Fixed the missing icon on the cooling-state entity.
+- Added a backend dynamic icon fallback so cooling state does not depend solely on frontend icon translations.
+- Cooling now uses `mdi:fan-off` when idle, `mdi:fan` when active, and `mdi:fan-alert` when unavailable.
+- Retained the matching dynamic mappings in `icons.json`.
+- Added direct regression coverage for all cooling icon states.
+
 ## 0.3.10
 
 - Fixed the icon regression introduced by the compound sensor update.

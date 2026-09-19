@@ -12,12 +12,6 @@
       "cpu_usage": {
         "default": "mdi:cpu-64-bit"
       },
-      "cpu_frequency": {
-        "default": "mdi:speedometer"
-      },
-      "cpu_temperature": {
-        "default": "mdi:thermometer"
-      },
       "memory_usage": {
         "default": "mdi:memory"
       },
@@ -73,13 +67,6 @@
           "warning": "mdi:alert-circle",
           "failed": "mdi:harddisk-remove",
           "testing": "mdi:magnify-scan"
-        }
-      },
-      "cooling_state": {
-        "default": "mdi:fan-alert",
-        "state": {
-          "active": "mdi:fan",
-          "idle": "mdi:fan-off"
         }
       },
       "network_status": {

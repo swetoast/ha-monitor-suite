@@ -71,6 +71,28 @@ def _timestamp(data: dict[str, Any], path: tuple[str, ...]) -> datetime | None:
     return parsed if parsed.tzinfo is not None else None
 
 
+def _cpu_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
+    cpu = data.get("cpu")
+    if not isinstance(cpu, dict):
+        return None
+    attributes: dict[str, Any] = {}
+    temperature = cpu.get("temperature_c")
+    if isinstance(temperature, Real) and not isinstance(temperature, bool):
+        attributes["temperature_c"] = temperature
+    frequency = cpu.get("frequency_mhz")
+    if isinstance(frequency, Real) and not isinstance(frequency, bool):
+        attributes["frequency_mhz"] = frequency
+    return attributes or None
+
+
+def _fan_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
+    cooling = data.get("cooling")
+    if not isinstance(cooling, dict):
+        return None
+    state = cooling.get("state")
+    return {"cooling_state": state} if state in ("idle", "active") else None
+
+
 def _status_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
     health = data.get("health")
     if not isinstance(health, dict):
@@ -126,24 +148,7 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=1,
         value_fn=lambda data: _number(data, ("cpu", "usage_percent")),
-    ),
-    MonitorSuiteSensorDescription(
-        key="cpu_frequency",
-        translation_key="cpu_frequency",
-        device_class=SensorDeviceClass.FREQUENCY,
-        native_unit_of_measurement=UnitOfFrequency.MEGAHERTZ,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=0,
-        value_fn=lambda data: _number(data, ("cpu", "frequency_mhz")),
-    ),
-    MonitorSuiteSensorDescription(
-        key="cpu_temperature",
-        translation_key="cpu_temperature",
-        device_class=SensorDeviceClass.TEMPERATURE,
-        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-        state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=1,
-        value_fn=lambda data: _number(data, ("cpu", "temperature_c")),
+        attributes_fn=_cpu_attributes,
     ),
     MonitorSuiteSensorDescription(
         key="memory_usage",
@@ -186,15 +191,7 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         native_unit_of_measurement="rpm",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data: _number(data, ("cooling", "fan_speed_rpm")),
-    ),
-    MonitorSuiteSensorDescription(
-        key="cooling_state",
-        translation_key="cooling_state",
-        device_class=SensorDeviceClass.ENUM,
-        options=["idle", "active"],
-        value_fn=lambda data: _enum_value(
-            data, ("cooling", "state"), ("idle", "active")
-        ),
+        attributes_fn=_fan_attributes,
     ),
     MonitorSuiteSensorDescription(
         key="network_status",
@@ -267,7 +264,9 @@ async def async_setup_entry(
     registry = er.async_get(hass)
     for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
         unique_id = entity_entry.unique_id
-        if unique_id.endswith("_network_link_speed") or (
+        if unique_id.endswith(
+            ("_network_link_speed", "_cpu_frequency", "_cpu_temperature", "_cooling_state")
+        ) or (
             "_smart_" in unique_id
             and unique_id.endswith(("_temperature", "_remaining_life"))
         ):

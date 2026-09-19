@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.10"
+    assert manifest["version"] == "0.3.12"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -80,14 +80,11 @@ def test_sensor_surface_stays_focused() -> None:
     for key in (
         "status",
         "cpu_usage",
-        "cpu_frequency",
-        "cpu_temperature",
         "memory_usage",
         "storage_usage",
         "power",
         "input_voltage",
         "fan_speed",
-        "cooling_state",
         "network_status",
         "network_download",
         "network_upload",
@@ -181,8 +178,7 @@ def test_sensor_presentation_and_raid_attribute_contract() -> None:
     strings = json.loads((COMPONENT / "strings.json").read_text())
     translations = json.loads((COMPONENT / "translations" / "en.json").read_text())
 
-    assert 'suggested_display_precision=0' in sensor
-    assert sensor.count('suggested_display_precision=1') >= 3
+    assert sensor.count('suggested_display_precision=1') >= 2
     assert 'suggested_display_precision=2' in sensor
     assert 'suggested_display_precision=3' in sensor
     assert '"smart_status",' not in sensor
@@ -196,7 +192,6 @@ def test_sensor_presentation_and_raid_attribute_contract() -> None:
 def test_reserved_states_and_compound_entities_are_handled() -> None:
     sensor = (COMPONENT / "sensor.py").read_text()
     assert 'options=["ok", "warning", "critical"]' in sensor
-    assert 'options=["idle", "active"]' in sensor
     assert 'options=["up", "down"]' in sensor
     assert 'attributes["link_speed_mbps"] = link_speed' in sensor
     assert 'attributes["temperature_c"] = temperature' in sensor
@@ -213,10 +208,6 @@ def test_icons_are_complete_and_dynamic() -> None:
         "ok": "mdi:check-circle",
         "warning": "mdi:alert-circle",
         "critical": "mdi:alert-octagon",
-    }
-    assert icons["cooling_state"]["state"] == {
-        "active": "mdi:fan",
-        "idle": "mdi:fan-off",
     }
     assert icons["network_status"]["state"] == {
         "up": "mdi:lan-connect",
@@ -240,5 +231,18 @@ def test_icons_are_complete_and_dynamic() -> None:
     assert icons["fan_speed"]["range"] == {"1": "mdi:fan"}
     assert icons["storage_usage"]["range"] == {"90": "mdi:alert-circle"}
 
-    obsolete = {"network_link_speed", "smart_temperature", "smart_remaining_life"}
+    obsolete = {"network_link_speed", "smart_temperature", "smart_remaining_life", "cpu_frequency", "cpu_temperature", "cooling_state"}
     assert obsolete.isdisjoint(icons)
+
+
+
+
+def test_cpu_and_fan_compound_sensor_contract() -> None:
+    sensor = (COMPONENT / "sensor.py").read_text()
+    assert 'attributes["temperature_c"] = temperature' in sensor
+    assert 'attributes["frequency_mhz"] = frequency' in sensor
+    assert 'return {"cooling_state": state}' in sensor
+    assert 'key="cpu_frequency"' not in sensor
+    assert 'key="cpu_temperature"' not in sensor
+    assert 'key="cooling_state"' not in sensor
+    assert '"_cpu_frequency", "_cpu_temperature", "_cooling_state"' in sensor

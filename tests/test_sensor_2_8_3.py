@@ -17,8 +17,14 @@ STATUS = {
 
 def test_agent_2_8_3_fixed_sensor_values() -> None:
     descriptions = {description.key: description for description in CORE_SENSORS}
-    assert descriptions["cooling_state"].value_fn(STATUS) == "idle"
+    assert descriptions["cpu_usage"].attributes_fn(STATUS) is None
+    cpu_payload = {"cpu": {"usage_percent": 14.8, "temperature_c": 35.3, "frequency_mhz": 1500}}
+    assert descriptions["cpu_usage"].attributes_fn(cpu_payload) == {"temperature_c": 35.3, "frequency_mhz": 1500}
+    assert "cpu_temperature" not in descriptions
+    assert "cpu_frequency" not in descriptions
     assert descriptions["fan_speed"].value_fn(STATUS) == 0
+    assert descriptions["fan_speed"].attributes_fn(STATUS) == {"cooling_state": "idle"}
+    assert "cooling_state" not in descriptions
     assert descriptions["network_status"].value_fn(STATUS) == "up"
     assert descriptions["network_status"].attributes_fn(STATUS) == {"interface": "eth0", "link_speed_mbps": 1000}
     assert "network_link_speed" not in descriptions
@@ -34,7 +40,6 @@ def test_agent_2_8_3_dynamic_storage_rows() -> None:
 def test_reserved_enum_states_map_to_unavailable() -> None:
     descriptions = {description.key: description for description in CORE_SENSORS}
     assert descriptions["status"].value_fn({"health": {"status": "unavailable"}}) is None
-    assert descriptions["cooling_state"].value_fn({"cooling": {"state": "unavailable"}}) is None
     assert descriptions["network_status"].value_fn({"network": {"status": "unknown"}}) is None
 
 def _smart_entity(row: dict[str, object]) -> MonitorSuiteSmartStatusSensor:
@@ -55,3 +60,5 @@ def test_sata_smart_status_omits_missing_remaining_life() -> None:
 def test_smart_attributes_reject_boolean_measurements() -> None:
     entity = _smart_entity({"device": "nvme0n1", "status": "healthy", "temperature_c": True, "remaining_life_percent": False})
     assert entity.extra_state_attributes is None
+
+

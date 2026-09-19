@@ -55,12 +55,6 @@
       "cpu_usage": {
         "name": "CPU usage"
       },
-      "cpu_frequency": {
-        "name": "CPU frequency"
-      },
-      "cpu_temperature": {
-        "name": "CPU temperature"
-      },
       "memory_usage": {
         "name": "Memory usage"
       },
@@ -110,13 +104,6 @@
           "warning": "Warning",
           "failed": "Failed",
           "testing": "Testing"
-        }
-      },
-      "cooling_state": {
-        "name": "Cooling state",
-        "state": {
-          "idle": "Idle",
-          "active": "Active"
         }
       },
       "network_status": {
