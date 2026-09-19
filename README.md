@@ -76,7 +76,7 @@ After setup, Home Assistant creates a Monitor Suite device containing the availa
 The integration creates these core sensors when their values are available:
 
 - Overall status
-- CPU usage, frequency, and temperature
+- CPU usage with temperature and frequency attributes
 - Memory usage
 - Root filesystem usage
 - Power and input voltage
@@ -85,9 +85,61 @@ The integration creates these core sensors when their values are available:
 - Disk read and write rates
 - Last boot
 
-For each detected Linux MD array, it creates one RAID status sensor. For each SMART device, it creates one SMART status sensor. Temperature and remaining life are included as attributes when the agent supplies them.
+The compound CPU sensor uses this structure:
 
-Entities are added only when the agent reports the corresponding measurement. Raw duplicates, internal counters, serial numbers, power-on hours, total byte counts, and similar low-value fields are intentionally not exposed.
+```yaml
+sensor.hyperion_cpu_usage:
+  state: 14.8
+  attributes:
+    temperature: 35.3
+    frequency: 1500
+```
+
+The compound fan sensor uses this structure:
+
+```yaml
+sensor.hyperion_fan_speed:
+  state: 0
+  attributes:
+    cooling_state: idle
+```
+
+The compound network sensor uses this structure:
+
+```yaml
+sensor.hyperion_network_status:
+  state: up
+  attributes:
+    interface: eth0
+    link_speed: 1000
+    download: 5531
+    upload: 8072
+```
+
+For each detected Linux MD array, the integration creates one RAID status sensor.
+
+For each detected SMART device, the integration creates one SMART status sensor. Temperature and remaining life are included as attributes when supplied by the agent:
+
+```yaml
+sensor.hyperion_nvme0n1_smart_status:
+  state: healthy
+  attributes:
+    temperature: 19.85
+    remaining_life: 98
+```
+
+Entities are added only when the agent reports the corresponding capability. Raw duplicates, internal counters, serial numbers, power-on hours, total byte counts, and similar low-value fields are intentionally not exposed.
+
+## Attribute units
+
+Attribute names describe the measurement without embedding the unit in the name.
+
+- `temperature`: degrees Celsius
+- `frequency`: megahertz
+- `remaining_life`: percent
+- `link_speed`: megabits per second
+- `download`: bytes per second
+- `upload`: bytes per second
 
 ## Options
 
@@ -141,15 +193,34 @@ Diagnostics do not include host names, API tokens, RAID names, SMART device path
 
 ### A RAID or SMART entity is missing
 
-Dynamic entities are created only when the agent reports a supported array or measurement. Confirm that the agent can read the relevant RAID or SMART data on the monitored system.
+Dynamic entities are created only when the agent reports a supported array or storage device. Confirm that the agent can read the relevant RAID or SMART data on the monitored system.
+
+### The validation badge does not appear
+
+Confirm that the workflow exists at this exact path:
+
+```text
+.github/workflows/validate.yml
+```
+
+The filename must match the path used by the validation badge.
 
 ## Support and feedback
 
-Use the repository's [issue tracker](https://github.com/swetoast/ha-monitor-suite/issues) to report bugs or request improvements. Include the Home Assistant version, integration version, agent version, and relevant logs. Remove private network details and tokens before posting.
+Use the repository's [issue tracker](https://github.com/swetoast/ha-monitor-suite/issues) to report bugs or request improvements.
+
+Include the following information when reporting a problem:
+
+- Home Assistant version
+- Monitor Suite integration version
+- Monitor Suite Agent version
+- Relevant logs
+
+Remove private network details and API tokens before posting.
 
 ## Development
 
-The repository includes automated checks for Python syntax, formatting, linting, config-entry flows, migration behavior, diagnostics privacy, HACS metadata, and Home Assistant integration structure.
+The repository includes automated checks for Python syntax, formatting, linting, config-entry flows, migration behavior, diagnostics privacy, attribute naming, HACS metadata, and Home Assistant integration structure.
 
 Run the local repository checks with:
 
