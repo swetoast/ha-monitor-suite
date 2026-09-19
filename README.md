@@ -1,6 +1,6 @@
 # Monitor Suite for Home Assistant
 
-[![Validate](https://github.com/swetoast/ha-monitor-suite/actions/workflows/main.yml/badge.svg)](https://github.com/swetoast/ha-monitor-suite/actions/workflows/main.yml)
+[![Validate](https://github.com/swetoast/ha-monitor-suite/actions/workflows/validate.yml/badge.svg)](https://github.com/swetoast/ha-monitor-suite/actions/workflows/validate.yml)
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -29,6 +29,12 @@ Raspberry Pi                  Home Assistant
 ```
 
 The integration polls the agent's `/status` endpoint and shares each response across all entities. The `/health` endpoint is used while validating a new or changed connection.
+
+## Monitor Suite Agent
+
+This integration requires the separate [Monitor Suite Agent](https://github.com/swetoast/Monitor-Suite) server software running on the Raspberry Pi. The agent collects the system data and provides the authenticated local API consumed by this Home Assistant integration.
+
+Installation and configuration instructions for the server are available in the [Monitor Suite Agent repository](https://github.com/swetoast/Monitor-Suite).
 
 ## Requirements
 
