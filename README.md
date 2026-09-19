@@ -127,7 +127,7 @@ For each detected Linux MD array, the integration creates one RAID status sensor
 For each detected SMART device, the integration creates one SMART status sensor. Temperature and remaining life are included as attributes when supplied by the agent:
 
 ```yaml
-sensor.hyperion_nvme0n1_smart_status:
+sensor.machine_nvme0n1_smart_status:
   state: healthy
   attributes:
     temperature: 19.85
