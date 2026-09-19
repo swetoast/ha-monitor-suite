@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.14
+
+- Fixed Ruff import and formatting failures.
+- Sorted manifest keys in the order required by hassfest.
+- Moved the brand icon to `custom_components/monitor_suite/brand/icon.png` for HACS validation.
+- Configured the HACS action to ignore repository topics and description because those are GitHub repository settings, not source files.
+- Added regression tests for manifest ordering, brand placement, and HACS workflow handling.
+
 ## 0.3.13
 
 - Renamed compound attributes to concise contextual names: `temperature`, `frequency`, `remaining_life`, and `link_speed`.

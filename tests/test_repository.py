@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.13"
+    assert manifest["version"] == "0.3.14"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -146,7 +146,7 @@ def test_mit_license_and_single_integration() -> None:
 def test_release_infrastructure_and_branding() -> None:
     assert (ROOT / "pyproject.toml").is_file()
     assert (ROOT / ".github" / "workflows" / "validate.yml").is_file()
-    assert (ROOT / "brand" / "icon.png").is_file()
+    assert (COMPONENT / "brand" / "icon.png").is_file()
 
 
 def test_identity_migration_and_reconfigure_contract() -> None:
@@ -176,15 +176,12 @@ def test_sensor_presentation_and_raid_attribute_contract() -> None:
     strings = json.loads((COMPONENT / "strings.json").read_text())
     translations = json.loads((COMPONENT / "translations" / "en.json").read_text())
 
-    assert sensor.count('suggested_display_precision=1') >= 2
-    assert 'suggested_display_precision=2' in sensor
-    assert 'suggested_display_precision=3' in sensor
+    assert sensor.count("suggested_display_precision=1") >= 2
+    assert "suggested_display_precision=2" in sensor
+    assert "suggested_display_precision=3" in sensor
     assert '"smart_status",' not in sensor
     assert strings["entity"]["sensor"]["power"]["name"] == "Estimated power"
-    assert (
-        translations["entity"]["sensor"]["power"]["name"]
-        == "Estimated power"
-    )
+    assert translations["entity"]["sensor"]["power"]["name"] == "Estimated power"
 
 
 def test_reserved_states_and_compound_entities_are_handled() -> None:
@@ -196,7 +193,7 @@ def test_reserved_states_and_compound_entities_are_handled() -> None:
     assert 'attributes["remaining_life"] = remaining_life' in sensor
     assert "MonitorSuiteSmartTemperatureSensor" not in sensor
     assert "MonitorSuiteSmartLifeSensor" not in sensor
-    assert 'registry.async_remove(entity_entry.entity_id)' in sensor
+    assert "registry.async_remove(entity_entry.entity_id)" in sensor
 
 
 def test_icons_are_complete_and_dynamic() -> None:
@@ -229,10 +226,17 @@ def test_icons_are_complete_and_dynamic() -> None:
     assert icons["fan_speed"]["range"] == {"1": "mdi:fan"}
     assert icons["storage_usage"]["range"] == {"90": "mdi:alert-circle"}
 
-    obsolete = {"network_link_speed", "network_download", "network_upload", "smart_temperature", "smart_remaining_life", "cpu_frequency", "cpu_temperature", "cooling_state"}
+    obsolete = {
+        "network_link_speed",
+        "network_download",
+        "network_upload",
+        "smart_temperature",
+        "smart_remaining_life",
+        "cpu_frequency",
+        "cpu_temperature",
+        "cooling_state",
+    }
     assert obsolete.isdisjoint(icons)
-
-
 
 
 def test_cpu_and_fan_compound_sensor_contract() -> None:
@@ -246,7 +250,6 @@ def test_cpu_and_fan_compound_sensor_contract() -> None:
     assert '"_cpu_frequency"' in sensor
     assert '"_cpu_temperature"' in sensor
     assert '"_cooling_state"' in sensor
-
 
 
 def test_attribute_names_follow_the_approved_standard() -> None:
@@ -283,7 +286,14 @@ def test_attribute_names_follow_the_approved_standard() -> None:
     assert not {
         name for name in exposed_attribute_names if name.startswith(redundant_prefixes)
     }
-    assert {"temperature", "frequency", "remaining_life", "link_speed", "download", "upload"} <= exposed_attribute_names
+    assert {
+        "temperature",
+        "frequency",
+        "remaining_life",
+        "link_speed",
+        "download",
+        "upload",
+    } <= exposed_attribute_names
 
 
 def test_network_is_one_compound_entity() -> None:
@@ -295,3 +305,20 @@ def test_network_is_one_compound_entity() -> None:
     assert 'key="network_upload"' not in sensor
     assert '"_network_download"' in sensor
     assert '"_network_upload"' in sensor
+
+
+def test_manifest_key_order_matches_hassfest() -> None:
+    manifest = json.loads((COMPONENT / "manifest.json").read_text())
+    keys = list(manifest)
+    assert keys[:2] == ["domain", "name"]
+    assert keys[2:] == sorted(keys[2:])
+
+
+def test_hacs_brand_asset_is_inside_integration() -> None:
+    assert (COMPONENT / "brand" / "icon.png").is_file()
+    assert not (ROOT / "brand").exists()
+
+
+def test_hacs_repository_metadata_checks_are_explicitly_handled() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
+    assert "ignore: topics description" in workflow

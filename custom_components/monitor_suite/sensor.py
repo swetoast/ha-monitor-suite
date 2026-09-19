@@ -19,9 +19,7 @@ from homeassistant.const import (
     PERCENTAGE,
     UnitOfDataRate,
     UnitOfElectricPotential,
-    UnitOfFrequency,
     UnitOfPower,
-    UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
@@ -204,9 +202,7 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         translation_key="network_status",
         device_class=SensorDeviceClass.ENUM,
         options=["up", "down"],
-        value_fn=lambda data: _enum_value(
-            data, ("network", "status"), ("up", "down")
-        ),
+        value_fn=lambda data: _enum_value(data, ("network", "status"), ("up", "down")),
         attributes_fn=_network_attributes,
     ),
     MonitorSuiteSensorDescription(
@@ -508,4 +504,3 @@ class MonitorSuiteSmartStatusSensor(MonitorSuiteSmartSensor):
         if isinstance(remaining_life, Real) and not isinstance(remaining_life, bool):
             attributes["remaining_life"] = remaining_life
         return attributes or None
-

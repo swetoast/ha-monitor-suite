@@ -53,7 +53,6 @@ async def test_user_flow_form_loads(hass: HomeAssistant) -> None:
     )
 
 
-
 async def test_user_flow_stores_stable_device_id(hass: HomeAssistant) -> None:
     with patch(
         "custom_components.monitor_suite.config_flow.async_validate_connection",
@@ -130,7 +129,6 @@ async def test_options_flow_form_loads(hass: HomeAssistant) -> None:
     assert result["type"] == "form"
     assert result["step_id"] == "init"
     assert result["errors"] == {}
-
 
 
 async def test_options_update_interval(hass: HomeAssistant) -> None:

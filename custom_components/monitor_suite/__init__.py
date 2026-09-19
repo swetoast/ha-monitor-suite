@@ -20,6 +20,7 @@ async def _async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload Monitor Suite after config entry options change."""
     await hass.config_entries.async_reload(entry.entry_id)
 
+
 type MonitorSuiteConfigEntry = ConfigEntry[MonitorSuiteCoordinator]
 
 
