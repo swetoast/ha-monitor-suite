@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.9
+
+- Consolidated each physical drive into one SMART status entity.
+- Added `temperature_c` and `remaining_life_percent` as optional SMART status attributes.
+- Removed separate SMART temperature and remaining-life entities.
+- Moved negotiated link speed into the network status attributes and removed the separate link-speed entity.
+- Kept fan speed, input voltage, network rates, disk rates, and other graphable measurements as separate sensors.
+
 ## 0.3.8
 
 - Kept NVMe temperature entities available when SMART health is unavailable but the agent still supplies a live hwmon temperature.

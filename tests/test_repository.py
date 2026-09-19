@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.8"
+    assert manifest["version"] == "0.3.9"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -89,7 +89,6 @@ def test_sensor_surface_stays_focused() -> None:
         "fan_speed",
         "cooling_state",
         "network_status",
-        "network_link_speed",
         "network_download",
         "network_upload",
         "disk_read",
@@ -194,10 +193,14 @@ def test_sensor_presentation_and_raid_attribute_contract() -> None:
     )
 
 
-def test_reserved_states_and_hwmon_fallback_are_handled() -> None:
+def test_reserved_states_and_compound_entities_are_handled() -> None:
     sensor = (COMPONENT / "sensor.py").read_text()
     assert 'options=["ok", "warning", "critical"]' in sensor
     assert 'options=["idle", "active"]' in sensor
     assert 'options=["up", "down"]' in sensor
-    assert 'return self.coordinator.last_update_success and self.native_value is not None' in sensor
-    assert '"Return whether a live SMART or hwmon temperature is available."' in sensor
+    assert 'attributes["link_speed_mbps"] = link_speed' in sensor
+    assert 'attributes["temperature_c"] = temperature' in sensor
+    assert 'attributes["remaining_life_percent"] = remaining_life' in sensor
+    assert "MonitorSuiteSmartTemperatureSensor" not in sensor
+    assert "MonitorSuiteSmartLifeSensor" not in sensor
+    assert 'registry.async_remove(entity_entry.entity_id)' in sensor

@@ -81,15 +81,12 @@ The integration creates these core sensors when their values are available:
 - Root filesystem usage
 - Power and input voltage
 - Fan speed and cooling state
-- Network status, negotiated link speed, download rate, and upload rate
+- Network status with interface and negotiated link speed attributes
+- Network download and upload rates
 - Disk read and write rates
 - Last boot
 
-For each detected Linux MD array, it creates one RAID status sensor. For each supported SMART device, it may create:
-
-- SMART status
-- SMART temperature
-- SMART remaining life
+For each detected Linux MD array, it creates one RAID status sensor. For each SMART device, it creates one SMART status sensor. Temperature and remaining life are included as attributes when the agent supplies them.
 
 Entities are added only when the agent reports the corresponding measurement. Raw duplicates, internal counters, serial numbers, power-on hours, total byte counts, and similar low-value fields are intentionally not exposed.
 

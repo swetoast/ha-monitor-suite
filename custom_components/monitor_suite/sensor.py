@@ -24,6 +24,7 @@ from homeassistant.const import (
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -87,8 +88,16 @@ def _power_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _network_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
-    interface = data.get("network", {}).get("interface")
-    return {"interface": interface} if isinstance(interface, str) else None
+    network = data.get("network")
+    if not isinstance(network, dict):
+        return None
+    attributes: dict[str, Any] = {}
+    if isinstance(network.get("interface"), str):
+        attributes["interface"] = network["interface"]
+    link_speed = network.get("link_speed_mbps")
+    if isinstance(link_speed, Real) and not isinstance(link_speed, bool):
+        attributes["link_speed_mbps"] = link_speed
+    return attributes or None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -198,13 +207,6 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         attributes_fn=_network_attributes,
     ),
     MonitorSuiteSensorDescription(
-        key="network_link_speed",
-        translation_key="network_link_speed",
-        native_unit_of_measurement="Mbit/s",
-        state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: _number(data, ("network", "link_speed_mbps")),
-    ),
-    MonitorSuiteSensorDescription(
         key="network_download",
         translation_key="network_download",
         device_class=SensorDeviceClass.DATA_RATE,
@@ -262,6 +264,15 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up sensors from one coordinator snapshot."""
+    registry = er.async_get(hass)
+    for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
+        unique_id = entity_entry.unique_id
+        if unique_id.endswith("_network_link_speed") or (
+            "_smart_" in unique_id
+            and unique_id.endswith(("_temperature", "_remaining_life"))
+        ):
+            registry.async_remove(entity_entry.entity_id)
+
     coordinator = entry.runtime_data
     async_add_entities(
         MonitorSuiteSensor(coordinator, entry, description)
@@ -298,24 +309,6 @@ async def async_setup_entry(
                     new_entities.append(
                         MonitorSuiteSmartStatusSensor(coordinator, entry, device)
                     )
-
-                if row.get("temperature_c") is not None:
-                    temperature_identity = f"smart:{device}:temperature"
-                    if temperature_identity not in discovered:
-                        discovered.add(temperature_identity)
-                        new_entities.append(
-                            MonitorSuiteSmartTemperatureSensor(
-                                coordinator, entry, device
-                            )
-                        )
-
-                if row.get("remaining_life_percent") is not None:
-                    life_identity = f"smart:{device}:remaining_life"
-                    if life_identity not in discovered:
-                        discovered.add(life_identity)
-                        new_entities.append(
-                            MonitorSuiteSmartLifeSensor(coordinator, entry, device)
-                        )
 
         if new_entities:
             async_add_entities(new_entities)
@@ -487,7 +480,7 @@ class MonitorSuiteSmartSensor(MonitorSuiteBaseSensor):
 
 
 class MonitorSuiteSmartStatusSensor(MonitorSuiteSmartSensor):
-    """SMART health for one physical disk."""
+    """SMART health and supporting measurements for one physical disk."""
 
     _attr_translation_key = "smart_status"
     _attr_device_class = SensorDeviceClass.ENUM
@@ -505,59 +498,18 @@ class MonitorSuiteSmartStatusSensor(MonitorSuiteSmartSensor):
         value = row.get("status") if row else None
         return value if value in self._attr_options else None
 
-
-class MonitorSuiteSmartTemperatureSensor(MonitorSuiteSmartSensor):
-    """SMART temperature for one physical disk."""
-
-    _attr_translation_key = "smart_temperature"
-    _attr_device_class = SensorDeviceClass.TEMPERATURE
-    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
-    _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_suggested_display_precision = 1
-
-    def __init__(
-        self, coordinator: MonitorSuiteCoordinator, entry: ConfigEntry, device: str
-    ) -> None:
-        super().__init__(coordinator, entry, device, "temperature")
-
     @property
-    def native_value(self) -> int | float | None:
-        """Return the cached SMART temperature."""
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return temperature and remaining life when supplied by the agent."""
         row = self._row()
-        value = row.get("temperature_c") if row else None
-        return (
-            value if isinstance(value, Real) and not isinstance(value, bool) else None
-        )
+        if row is None:
+            return None
+        attributes: dict[str, Any] = {}
+        temperature = row.get("temperature_c")
+        if isinstance(temperature, Real) and not isinstance(temperature, bool):
+            attributes["temperature_c"] = temperature
+        remaining_life = row.get("remaining_life_percent")
+        if isinstance(remaining_life, Real) and not isinstance(remaining_life, bool):
+            attributes["remaining_life_percent"] = remaining_life
+        return attributes or None
 
-    @property
-    def available(self) -> bool:
-        """Return whether a live SMART or hwmon temperature is available."""
-        return self.coordinator.last_update_success and self.native_value is not None
-
-
-class MonitorSuiteSmartLifeSensor(MonitorSuiteSmartSensor):
-    """Remaining-life estimate for one physical disk."""
-
-    _attr_translation_key = "smart_remaining_life"
-    _attr_native_unit_of_measurement = PERCENTAGE
-    _attr_state_class = SensorStateClass.MEASUREMENT
-    _attr_suggested_display_precision = 0
-
-    def __init__(
-        self, coordinator: MonitorSuiteCoordinator, entry: ConfigEntry, device: str
-    ) -> None:
-        super().__init__(coordinator, entry, device, "remaining_life")
-
-    @property
-    def native_value(self) -> int | float | None:
-        """Return the cached remaining-life estimate."""
-        row = self._row()
-        value = row.get("remaining_life_percent") if row else None
-        return (
-            value if isinstance(value, Real) and not isinstance(value, bool) else None
-        )
-
-    @property
-    def available(self) -> bool:
-        """Return whether remaining life is currently available."""
-        return super().available and self.native_value is not None

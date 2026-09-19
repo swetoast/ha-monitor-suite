@@ -112,12 +112,6 @@
           "testing": "Testing"
         }
       },
-      "smart_temperature": {
-        "name": "{name} temperature"
-      },
-      "smart_remaining_life": {
-        "name": "{name} remaining life"
-      },
       "cooling_state": {
         "name": "Cooling state",
         "state": {
@@ -131,9 +125,6 @@
           "up": "Up",
           "down": "Down"
         }
-      },
-      "network_link_speed": {
-        "name": "Network link speed"
       }
     }
   },
