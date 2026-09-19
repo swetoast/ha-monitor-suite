@@ -4,13 +4,13 @@
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Monitor Suite brings Raspberry Pi health and performance data into Home Assistant. It talks to a Monitor Suite Agent on your network and creates a focused set of clear entities instead of dumping every raw API value into your instance.
+Monitor Suite brings Raspberry Pi health and performance data into Home Assistant. It connects to a Monitor Suite Agent on your network and creates a focused set of entities instead of dumping every raw API value into your instance.
 
 ## Highlights
 
 - Monitors CPU, memory, storage, network, power, cooling, RAID, and SMART health.
 - Shares a single status request across all entities.
-- Creates focused sensors with proper device classes, units, state classes, and dynamic icons.
+- Creates sensors with device classes, units, state classes, and dynamic icons.
 - Discovers Linux MD arrays and supported SMART measurements automatically.
 - Supports setup, reauthentication, reconfiguration, and configurable polling from the UI.
 - Keeps API tokens, host names, RAID names, and SMART device paths out of diagnostics.
@@ -27,7 +27,7 @@ Raspberry Pi                  Home Assistant
 +-------------------+         +---------------------------+
 ```
 
-The integration polls the agent's `/status` endpoint and shares each response across all entities. The `/health` endpoint is used to validate a new or changed connection.
+The integration polls the agent's `/status` endpoint and shares each response across all entities. The `/health` endpoint validates a new or changed connection.
 
 ## Monitor Suite Agent
 
@@ -164,7 +164,7 @@ If the agent rejects the stored token, Home Assistant starts a reauthentication 
 
 Entities become unavailable when the coordinator cannot obtain a valid status response. The integration handles authentication failures, connection errors, request timeouts, unexpected redirects, malformed JSON, incomplete payloads, and agents that are not yet ready to provide a status sample.
 
-A successful later poll restores availability automatically.
+A later successful poll restores availability automatically.
 
 ## Diagnostics and privacy
 
