@@ -51,6 +51,14 @@ def _number(data: dict[str, Any], path: tuple[str, ...]) -> int | float | None:
     return value
 
 
+def _enum_value(
+    data: dict[str, Any], path: tuple[str, ...], options: tuple[str, ...]
+) -> str | None:
+    """Return only normal enum values, excluding Home Assistant special states."""
+    value = _nested_value(data, path)
+    return value if isinstance(value, str) and value in options else None
+
+
 def _timestamp(data: dict[str, Any], path: tuple[str, ...]) -> datetime | None:
     value = _nested_value(data, path)
     if not isinstance(value, str):
@@ -78,6 +86,11 @@ def _power_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
     return {"source": source} if isinstance(source, str) else None
 
 
+def _network_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
+    interface = data.get("network", {}).get("interface")
+    return {"interface": interface} if isinstance(interface, str) else None
+
+
 @dataclass(frozen=True, kw_only=True)
 class MonitorSuiteSensorDescription(SensorEntityDescription):
     """Describe a fixed Monitor Suite sensor."""
@@ -91,8 +104,10 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         key="status",
         translation_key="status",
         device_class=SensorDeviceClass.ENUM,
-        options=["ok", "warning", "critical", "unavailable"],
-        value_fn=lambda data: _nested_value(data, ("health", "status")),
+        options=["ok", "warning", "critical"],
+        value_fn=lambda data: _enum_value(
+            data, ("health", "status"), ("ok", "warning", "critical")
+        ),
         attributes_fn=_status_attributes,
     ),
     MonitorSuiteSensorDescription(
@@ -162,6 +177,32 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         native_unit_of_measurement="rpm",
         state_class=SensorStateClass.MEASUREMENT,
         value_fn=lambda data: _number(data, ("cooling", "fan_speed_rpm")),
+    ),
+    MonitorSuiteSensorDescription(
+        key="cooling_state",
+        translation_key="cooling_state",
+        device_class=SensorDeviceClass.ENUM,
+        options=["idle", "active"],
+        value_fn=lambda data: _enum_value(
+            data, ("cooling", "state"), ("idle", "active")
+        ),
+    ),
+    MonitorSuiteSensorDescription(
+        key="network_status",
+        translation_key="network_status",
+        device_class=SensorDeviceClass.ENUM,
+        options=["up", "down"],
+        value_fn=lambda data: _enum_value(
+            data, ("network", "status"), ("up", "down")
+        ),
+        attributes_fn=_network_attributes,
+    ),
+    MonitorSuiteSensorDescription(
+        key="network_link_speed",
+        translation_key="network_link_speed",
+        native_unit_of_measurement="Mbit/s",
+        state_class=SensorStateClass.MEASUREMENT,
+        value_fn=lambda data: _number(data, ("network", "link_speed_mbps")),
     ),
     MonitorSuiteSensorDescription(
         key="network_download",
@@ -490,8 +531,8 @@ class MonitorSuiteSmartTemperatureSensor(MonitorSuiteSmartSensor):
 
     @property
     def available(self) -> bool:
-        """Return whether the temperature is currently available."""
-        return super().available and self.native_value is not None
+        """Return whether a live SMART or hwmon temperature is available."""
+        return self.coordinator.last_update_success and self.native_value is not None
 
 
 class MonitorSuiteSmartLifeSensor(MonitorSuiteSmartSensor):

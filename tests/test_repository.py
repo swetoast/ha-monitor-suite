@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.5"
+    assert manifest["version"] == "0.3.8"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -87,6 +87,9 @@ def test_sensor_surface_stays_focused() -> None:
         "power",
         "input_voltage",
         "fan_speed",
+        "cooling_state",
+        "network_status",
+        "network_link_speed",
         "network_download",
         "network_upload",
         "disk_read",
@@ -97,7 +100,6 @@ def test_sensor_surface_stays_focused() -> None:
     for forbidden in (
         "available_bytes",
         "total_bytes",
-        "link_speed_mbps",
         "serial_number",
         "power_on_hours",
     ):
@@ -190,3 +192,12 @@ def test_sensor_presentation_and_raid_attribute_contract() -> None:
         translations["entity"]["sensor"]["power"]["name"]
         == "Estimated power"
     )
+
+
+def test_reserved_states_and_hwmon_fallback_are_handled() -> None:
+    sensor = (COMPONENT / "sensor.py").read_text()
+    assert 'options=["ok", "warning", "critical"]' in sensor
+    assert 'options=["idle", "active"]' in sensor
+    assert 'options=["up", "down"]' in sensor
+    assert 'return self.coordinator.last_update_success and self.native_value is not None' in sensor
+    assert '"Return whether a live SMART or hwmon temperature is available."' in sensor

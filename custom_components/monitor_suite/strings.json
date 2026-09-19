@@ -49,8 +49,7 @@
         "state": {
           "ok": "Healthy",
           "warning": "Warning",
-          "critical": "Critical",
-          "unavailable": "Unavailable"
+          "critical": "Critical"
         }
       },
       "cpu_usage": {
@@ -118,6 +117,23 @@
       },
       "smart_remaining_life": {
         "name": "{name} remaining life"
+      },
+      "cooling_state": {
+        "name": "Cooling state",
+        "state": {
+          "idle": "Idle",
+          "active": "Active"
+        }
+      },
+      "network_status": {
+        "name": "Network status",
+        "state": {
+          "up": "Up",
+          "down": "Down"
+        }
+      },
+      "network_link_speed": {
+        "name": "Network link speed"
       }
     }
   },

@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.3.8
+
+- Kept NVMe temperature entities available when SMART health is unavailable but the agent still supplies a live hwmon temperature.
+- Removed Home Assistant reserved `unknown` and `unavailable` states from core enum options.
+- Mapped unsupported, unknown, and unavailable core enum readings to entity unavailability.
+- Added regression coverage for the SMART hwmon fallback and reserved enum-state handling.
+
+## 0.3.7
+
+- Completed the Agent 2.8.3 sensor audit.
+- Updated stale repository tests for the current integration version and network link-speed sensor.
+- Added the selected network interface as the single explanatory attribute on network status.
+- Updated the README sensor inventory.
+
+## 0.3.6
+
+- Added cooling-state, network-status, and network-link-speed sensors for Monitor Suite Agent 2.8.3.
+- Added dynamic RAID status, SMART status, SMART temperature, and NVMe remaining-life regression coverage using the verified 2.8.3 response shape.
+
 ## 0.3.5
 
 - Preserved the config-flow schema serialization fix from 0.3.4.

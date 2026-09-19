@@ -80,8 +80,8 @@ The integration creates these core sensors when their values are available:
 - Memory usage
 - Root filesystem usage
 - Power and input voltage
-- Fan speed
-- Network download and upload rates
+- Fan speed and cooling state
+- Network status, negotiated link speed, download rate, and upload rate
 - Disk read and write rates
 - Last boot
 
