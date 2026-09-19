@@ -94,7 +94,7 @@ The integration creates these core sensors when their values are available:
 The compound CPU sensor uses this structure:
 
 ```yaml
-sensor.hyperion_cpu_usage:
+sensor.machine_cpu_usage:
   state: 14.8
   attributes:
     temperature: 35.3
@@ -104,7 +104,7 @@ sensor.hyperion_cpu_usage:
 The compound fan sensor uses this structure:
 
 ```yaml
-sensor.hyperion_fan_speed:
+sensor.machine_fan_speed:
   state: 0
   attributes:
     cooling_state: idle
@@ -113,7 +113,7 @@ sensor.hyperion_fan_speed:
 The compound network sensor uses this structure:
 
 ```yaml
-sensor.hyperion_network_status:
+sensor.machine_network_status:
   state: up
   attributes:
     interface: eth0
