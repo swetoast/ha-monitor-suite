@@ -47,7 +47,7 @@ async def test_user_flow_form_loads(hass: HomeAssistant) -> None:
 
     assert result["type"] == "form"
     assert result["step_id"] == "user"
-    assert result["errors"] == {}
+    assert result["errors"] in (None, {})
     voluptuous_serialize.convert(
         result["data_schema"], custom_serializer=cv.custom_serializer
     )
@@ -128,7 +128,7 @@ async def test_options_flow_form_loads(hass: HomeAssistant) -> None:
 
     assert result["type"] == "form"
     assert result["step_id"] == "init"
-    assert result["errors"] == {}
+    assert result["errors"] in (None, {})
 
 
 async def test_options_update_interval(hass: HomeAssistant) -> None:

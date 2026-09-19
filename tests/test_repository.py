@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.15"
+    assert manifest["version"] == "0.3.17"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -145,7 +145,6 @@ def test_mit_license_and_single_integration() -> None:
 
 def test_release_infrastructure_and_branding() -> None:
     assert (ROOT / "pyproject.toml").is_file()
-    assert (ROOT / ".github" / "workflows" / "validate.yml").is_file()
     assert (COMPONENT / "brand" / "icon.png").is_file()
 
 
@@ -316,15 +315,3 @@ def test_manifest_key_order_matches_hassfest() -> None:
 
 def test_hacs_brand_asset_is_inside_integration() -> None:
     assert (COMPONENT / "brand" / "icon.png").is_file()
-    assert not (ROOT / "brand").exists()
-
-
-def test_hacs_repository_metadata_checks_are_explicitly_handled() -> None:
-    workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
-    assert "ignore: topics description" in workflow
-
-
-def test_github_test_dependencies_pin_compatible_pycares() -> None:
-    workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
-    assert "homeassistant==2025.12.2" in workflow
-    assert "pycares==4.11.0" in workflow

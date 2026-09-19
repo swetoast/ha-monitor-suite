@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.17
+
+- Updated the options-flow test to accept Home Assistant 2025.12.2 returning `errors: null` for a valid form.
+- Removed brittle repository tests that depended on hidden `.github` files being present in every copied source tree.
+- Allowed a legacy root `brand/` directory to coexist while continuing to require the valid integration brand asset.
+- Kept the corrected Node 24 GitHub Actions workflow in the release package.
+
+## 0.3.16
+
+- Updated GitHub Actions checkout and Python setup actions to Node 24-compatible releases.
+- Pinned all validation jobs to Ubuntu 24.04 so the upcoming `ubuntu-latest` migration to Ubuntu 26.04 cannot change the test environment unexpectedly.
+- Added regression tests for action versions and runner-image pinning.
+
 ## 0.3.15
 
 - Pinned `pycares==4.11.0` in GitHub Actions to prevent `aiodns==3.5.0` from loading the incompatible pycares 5 API during pytest startup.
