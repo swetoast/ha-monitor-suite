@@ -4,18 +4,17 @@
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Monitor Suite brings useful Raspberry Pi health and performance data into Home Assistant. It connects directly to a Monitor Suite Agent on the local network and creates a focused set of clear entities instead of exposing every raw API value.
+Monitor Suite brings Raspberry Pi health and performance data into Home Assistant. It talks to a Monitor Suite Agent on your network and creates a focused set of clear entities instead of dumping every raw API value into your instance.
 
 ## Highlights
 
 - Monitors CPU, memory, storage, network, power, cooling, RAID, and SMART health.
-- Uses one shared local status request for all entities.
-- Creates focused sensors with Home Assistant device classes, units, state classes, and dynamic icons.
+- Shares a single status request across all entities.
+- Creates focused sensors with proper device classes, units, state classes, and dynamic icons.
 - Discovers Linux MD arrays and supported SMART measurements automatically.
-- Supports setup, reauthentication, reconfiguration, and configurable polling from the Home Assistant UI.
+- Supports setup, reauthentication, reconfiguration, and configurable polling from the UI.
 - Keeps API tokens, host names, RAID names, and SMART device paths out of diagnostics.
 - Preserves entity and device identities when the agent address changes.
-- Requires no cloud service.
 
 ## How it works
 
@@ -24,26 +23,24 @@ Raspberry Pi                  Home Assistant
 +-------------------+         +---------------------------+
 | Monitor Suite     |  HTTP   | Monitor Suite integration |
 | Agent             | ------> | Sensors and device data   |
-| /health /status   |  LAN    | Diagnostics and options   |
+| /health /status   |         | Diagnostics and options   |
 +-------------------+         +---------------------------+
 ```
 
-The integration polls the agent's `/status` endpoint and shares each response across all entities. The `/health` endpoint is used while validating a new or changed connection.
+The integration polls the agent's `/status` endpoint and shares each response across all entities. The `/health` endpoint is used to validate a new or changed connection.
 
 ## Monitor Suite Agent
 
-This integration requires the separate [Monitor Suite Agent](https://github.com/swetoast/Monitor-Suite) server software running on the Raspberry Pi. The agent collects the system data and provides the authenticated local API consumed by this Home Assistant integration.
+This integration requires the separate [Monitor Suite Agent](https://github.com/swetoast/Monitor-Suite) running on the Raspberry Pi. The agent collects the system data and provides the authenticated API this integration consumes.
 
-Installation and configuration instructions for the server are available in the [Monitor Suite Agent repository](https://github.com/swetoast/Monitor-Suite).
+Installation and configuration for the server live in the [Monitor Suite Agent repository](https://github.com/swetoast/Monitor-Suite).
 
 ## Requirements
 
 - Home Assistant 2025.12.2 or newer
-- A reachable Monitor Suite Agent
+- A Monitor Suite Agent reachable from Home Assistant
 - The agent host, port, and API token
 - HACS 2.0.0 or newer when installing through HACS
-
-The agent must be reachable directly from Home Assistant over the trusted local network.
 
 ## Installation
 
@@ -57,8 +54,8 @@ The agent must be reachable directly from Home Assistant over the trusted local 
 
 ### Manual installation
 
-1. Copy `custom_components/monitor_suite` from this repository into the Home Assistant configuration directory.
-2. Confirm that the final path is:
+1. Copy `custom_components/monitor_suite` from this repository into your Home Assistant configuration directory.
+2. Confirm the final path is:
 
    ```text
    /config/custom_components/monitor_suite
@@ -77,7 +74,7 @@ The integration verifies authentication and validates complete health and status
 
 ## Usage
 
-After setup, Home Assistant creates a Monitor Suite device containing the available entities. Use those entities in dashboards, automations, history, and alerts like any other Home Assistant sensor.
+After setup, Home Assistant creates a Monitor Suite device with the available entities. Use them in dashboards, automations, history, and alerts like any other sensor.
 
 The integration creates these core sensors when their values are available:
 
@@ -91,7 +88,7 @@ The integration creates these core sensors when their values are available:
 - Disk read and write rates
 - Last boot
 
-The compound CPU sensor uses this structure:
+The compound CPU sensor:
 
 ```yaml
 sensor.machine_cpu_usage:
@@ -101,7 +98,7 @@ sensor.machine_cpu_usage:
     frequency: 1500
 ```
 
-The compound fan sensor uses this structure:
+The compound fan sensor:
 
 ```yaml
 sensor.machine_fan_speed:
@@ -110,7 +107,7 @@ sensor.machine_fan_speed:
     cooling_state: idle
 ```
 
-The compound network sensor uses this structure:
+The compound network sensor:
 
 ```yaml
 sensor.machine_network_status:
@@ -124,7 +121,7 @@ sensor.machine_network_status:
 
 For each detected Linux MD array, the integration creates one RAID status sensor.
 
-For each detected SMART device, the integration creates one SMART status sensor. Temperature and remaining life are included as attributes when supplied by the agent:
+For each detected SMART device, the integration creates one SMART status sensor. Temperature and remaining life are included as attributes when the agent supplies them:
 
 ```yaml
 sensor.machine_nvme0n1_smart_status:
@@ -134,11 +131,11 @@ sensor.machine_nvme0n1_smart_status:
     remaining_life: 98
 ```
 
-Entities are added only when the agent reports the corresponding capability. Raw duplicates, internal counters, serial numbers, power-on hours, total byte counts, and similar low-value fields are intentionally not exposed.
+Entities are added only when the agent reports the corresponding capability. Raw duplicates, internal counters, serial numbers, power-on hours, total byte counts, and similar low-value fields are intentionally left out.
 
 ## Attribute units
 
-Attribute names describe the measurement without embedding the unit in the name.
+Attribute names describe the measurement without embedding the unit.
 
 - `temperature`: degrees Celsius
 - `frequency`: megahertz
@@ -165,9 +162,9 @@ If the agent rejects the stored token, Home Assistant starts a reauthentication 
 
 ## Availability and error handling
 
-Entities become unavailable when the shared coordinator cannot obtain a valid status response. The integration handles authentication failures, connection errors, request timeouts, unexpected redirects, malformed JSON, incomplete payloads, and agents that are not ready to provide a status sample.
+Entities become unavailable when the coordinator cannot obtain a valid status response. The integration handles authentication failures, connection errors, request timeouts, unexpected redirects, malformed JSON, incomplete payloads, and agents that are not yet ready to provide a status sample.
 
-A successful later poll restores entity availability automatically.
+A successful later poll restores availability automatically.
 
 ## Diagnostics and privacy
 
@@ -186,7 +183,7 @@ Diagnostics do not include host names, API tokens, RAID names, SMART device path
 
 ### The integration cannot connect
 
-- Confirm that Home Assistant can reach the agent host and port over the local network.
+- Confirm that Home Assistant can reach the agent host and port.
 - Confirm that the Monitor Suite Agent service is running.
 - Check that the configured API token matches the agent token.
 - Confirm that no firewall rule blocks Home Assistant from reaching the agent.
@@ -209,13 +206,13 @@ Confirm that the workflow exists at this exact path:
 .github/workflows/main.yml
 ```
 
-The filename must match the path used by the validation badge.
+The filename must match the path used by the badge.
 
 ## Support and feedback
 
 Use the repository's [issue tracker](https://github.com/swetoast/ha-monitor-suite/issues) to report bugs or request improvements.
 
-Include the following information when reporting a problem:
+Include the following when reporting a problem:
 
 - Home Assistant version
 - Monitor Suite integration version
@@ -226,9 +223,9 @@ Remove private network details and API tokens before posting.
 
 ## Development
 
-The repository includes automated checks for Python syntax, formatting, linting, config-entry flows, migration behavior, diagnostics privacy, attribute naming, HACS metadata, and Home Assistant integration structure.
+The repository includes automated checks for Python syntax, formatting, linting, config-entry flows, migration behavior, diagnostics privacy, attribute naming, HACS metadata, and integration structure.
 
-Run the local repository checks with:
+Run the local checks with:
 
 ```bash
 python -m pytest -q
