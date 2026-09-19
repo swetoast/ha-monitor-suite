@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.2
+
+- Fixed config flow and options flow loading on Home Assistant 2025.12 by replacing the removed `FlowResult` import with `ConfigFlowResult`.
+
 ## 0.3.1
 
 - Reworked the README around a concise project overview and clear highlights.

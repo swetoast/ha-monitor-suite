@@ -38,6 +38,17 @@ def _connection(host: str = HOST, port: int = PORT) -> MonitorSuiteConnectionInf
     )
 
 
+async def test_user_flow_form_loads(hass: HomeAssistant) -> None:
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+
+    assert result["type"] == "form"
+    assert result["step_id"] == "user"
+    assert result["errors"] == {}
+
+
+
 async def test_user_flow_stores_stable_device_id(hass: HomeAssistant) -> None:
     with patch(
         "custom_components.monitor_suite.config_flow.async_validate_connection",
@@ -92,6 +103,29 @@ async def test_reconfigure_updates_endpoint_not_device_id(
     assert entry.unique_id == endpoint_id(new_host, PORT)
     assert entry.data[CONF_DEVICE_ID] == old_id
     assert entry.data[CONF_API_KEY] == TOKEN
+
+
+async def test_options_flow_form_loads(hass: HomeAssistant) -> None:
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title=HOST,
+        unique_id=endpoint_id(HOST, PORT),
+        version=2,
+        data={
+            CONF_HOST: HOST,
+            CONF_PORT: PORT,
+            CONF_API_KEY: TOKEN,
+            CONF_DEVICE_ID: endpoint_id(HOST, PORT),
+        },
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+
+    assert result["type"] == "form"
+    assert result["step_id"] == "init"
+    assert result["errors"] == {}
+
 
 
 async def test_options_update_interval(hass: HomeAssistant) -> None:
