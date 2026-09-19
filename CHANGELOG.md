@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.15
+
+- Pinned `pycares==4.11.0` in GitHub Actions to prevent `aiodns==3.5.0` from loading the incompatible pycares 5 API during pytest startup.
+- Added a regression test for the CI dependency pin.
+
 ## 0.3.14
 
 - Fixed Ruff import and formatting failures.

@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.14"
+    assert manifest["version"] == "0.3.15"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -322,3 +322,9 @@ def test_hacs_brand_asset_is_inside_integration() -> None:
 def test_hacs_repository_metadata_checks_are_explicitly_handled() -> None:
     workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
     assert "ignore: topics description" in workflow
+
+
+def test_github_test_dependencies_pin_compatible_pycares() -> None:
+    workflow = (ROOT / ".github" / "workflows" / "validate.yml").read_text()
+    assert "homeassistant==2025.12.2" in workflow
+    assert "pycares==4.11.0" in workflow
