@@ -40,7 +40,7 @@ def _connection_schema(
     return vol.Schema(
         {
             vol.Required(CONF_HOST, default=values.get(CONF_HOST, "")): vol.All(
-                str, str.strip, vol.Length(min=1)
+                str, vol.Length(min=1)
             ),
             vol.Required(
                 CONF_PORT, default=values.get(CONF_PORT, DEFAULT_PORT)

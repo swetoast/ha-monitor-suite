@@ -1,9 +1,9 @@
 # Changelog
 
-## 0.3.3
+## 0.3.4
 
-- Fixed the config flow import failure on Home Assistant 2025.12 by replacing the unavailable `OptionsFlowWithReload` class with `OptionsFlow`.
-- Added a config entry update listener so saved options still reload the integration.
+- Fixed the config flow HTTP 500 caused by the non-serializable `str.strip` validator in the host schema.
+- Added a regression test that serializes the config flow schema through Home Assistant's serializer.
 
 ## 0.3.2
 

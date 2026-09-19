@@ -5,9 +5,11 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 import pytest
+import voluptuous_serialize
 from homeassistant.config_entries import SOURCE_RECONFIGURE, SOURCE_USER
 from homeassistant.const import CONF_HOST, CONF_PORT
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.monitor_suite.api import (
@@ -46,6 +48,9 @@ async def test_user_flow_form_loads(hass: HomeAssistant) -> None:
     assert result["type"] == "form"
     assert result["step_id"] == "user"
     assert result["errors"] == {}
+    voluptuous_serialize.convert(
+        result["data_schema"], custom_serializer=cv.custom_serializer
+    )
 
 
 

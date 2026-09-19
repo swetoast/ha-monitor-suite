@@ -9,6 +9,6 @@
   "integration_type": "hub",
   "iot_class": "local_polling",
   "requirements": [],
-  "version": "0.3.3",
+  "version": "0.3.4",
   "issue_tracker": "https://github.com/swetoast/ha-monitor-suite/issues"
 }
