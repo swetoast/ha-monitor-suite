@@ -1,0 +1,24 @@
+{
+  "entity": {
+    "sensor": {
+      "status": {"default": "mdi:help-circle", "state": {"ok": "mdi:check-circle", "warning": "mdi:alert-circle", "critical": "mdi:close-circle", "unavailable": "mdi:help-circle"}},
+      "cpu_usage": {"default": "mdi:cpu-64-bit"},
+      "cpu_frequency": {"default": "mdi:speedometer"},
+      "cpu_temperature": {"default": "mdi:thermometer"},
+      "memory_usage": {"default": "mdi:memory"},
+      "storage_usage": {"default": "mdi:harddisk", "range": {"90": "mdi:alert-circle"}},
+      "power": {"default": "mdi:flash"},
+      "input_voltage": {"default": "mdi:sine-wave"},
+      "fan_speed": {"default": "mdi:fan-off", "range": {"1": "mdi:fan"}},
+      "network_download": {"default": "mdi:download-network"},
+      "network_upload": {"default": "mdi:upload-network"},
+      "disk_read": {"default": "mdi:database-arrow-down"},
+      "disk_write": {"default": "mdi:database-arrow-up"},
+      "last_boot": {"default": "mdi:restart"},
+      "raid_status": {"default": "mdi:harddisk", "state": {"healthy": "mdi:check-circle", "degraded": "mdi:alert-circle", "failed": "mdi:close-circle", "recovering": "mdi:progress-wrench", "resyncing": "mdi:sync", "checking": "mdi:magnify-scan", "reshaping": "mdi:swap-horizontal"}},
+      "smart_status": {"default": "mdi:harddisk", "state": {"warning": "mdi:alert-circle", "failed": "mdi:harddisk-remove", "testing": "mdi:harddisk-plus"}},
+      "smart_temperature": {"default": "mdi:thermometer"},
+      "smart_remaining_life": {"default": "mdi:chart-donut", "range": {"0": "mdi:circle-slice-1", "25": "mdi:circle-slice-2", "50": "mdi:circle-slice-4", "75": "mdi:circle-slice-6", "90": "mdi:circle-slice-8"}}
+    }
+  }
+}

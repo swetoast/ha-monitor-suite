@@ -1,0 +1,135 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Monitor Suite Agent",
+        "description": "Enter the address and API token shown by the Monitor Suite Agent installer.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "api_key": "API token"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Update API token",
+        "description": "Enter the current API token for this Monitor Suite Agent.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "api_key": "API token"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Monitor Suite",
+        "description": "Update the connection settings for this Monitor Suite Agent.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "api_key": "API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to Monitor Suite Agent",
+      "invalid_auth": "The API token was rejected",
+      "invalid_response": "The server did not return a valid Monitor Suite Agent response",
+      "unknown": "Unexpected error",
+      "not_ready": "Monitor Suite Agent has not produced a status sample yet"
+    },
+    "abort": {
+      "already_configured": "This Monitor Suite Agent is already configured",
+      "reauth_successful": "The API token was updated",
+      "reconfigure_successful": "The connection settings were updated"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "status": {
+        "name": "Status",
+        "state": {
+          "ok": "Healthy",
+          "warning": "Warning",
+          "critical": "Critical",
+          "unavailable": "Unavailable"
+        }
+      },
+      "cpu_usage": {
+        "name": "CPU usage"
+      },
+      "cpu_frequency": {
+        "name": "CPU frequency"
+      },
+      "cpu_temperature": {
+        "name": "CPU temperature"
+      },
+      "memory_usage": {
+        "name": "Memory usage"
+      },
+      "storage_usage": {
+        "name": "Storage usage"
+      },
+      "power": {
+        "name": "Power"
+      },
+      "input_voltage": {
+        "name": "Input voltage"
+      },
+      "fan_speed": {
+        "name": "Fan speed"
+      },
+      "network_download": {
+        "name": "Network download"
+      },
+      "network_upload": {
+        "name": "Network upload"
+      },
+      "disk_read": {
+        "name": "Disk read"
+      },
+      "disk_write": {
+        "name": "Disk write"
+      },
+      "last_boot": {
+        "name": "Last boot"
+      },
+      "raid_status": {
+        "name": "{name} status",
+        "state": {
+          "healthy": "Healthy",
+          "degraded": "Degraded",
+          "failed": "Failed",
+          "recovering": "Recovering",
+          "resyncing": "Resyncing",
+          "checking": "Checking",
+          "reshaping": "Reshaping"
+        }
+      },
+      "smart_status": {
+        "name": "{name} SMART status",
+        "state": {
+          "healthy": "Healthy",
+          "warning": "Warning",
+          "failed": "Failed",
+          "testing": "Testing"
+        }
+      },
+      "smart_temperature": {
+        "name": "{name} temperature"
+      },
+      "smart_remaining_life": {
+        "name": "{name} remaining life"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Monitor Suite options",
+        "description": "Choose how often Home Assistant requests a new status snapshot. Short intervals increase network and processing activity.",
+        "data": {
+          "update_interval": "Update interval"
+        }
+      }
+    }
+  }
+}

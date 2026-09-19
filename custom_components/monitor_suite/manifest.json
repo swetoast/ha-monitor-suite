@@ -1,0 +1,14 @@
+{
+  "domain": "monitor_suite",
+  "name": "Monitor Suite",
+  "codeowners": [
+    "@swetoast"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/swetoast/ha-monitor-suite",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "requirements": [],
+  "version": "0.3.1",
+  "issue_tracker": "https://github.com/swetoast/ha-monitor-suite/issues"
+}
