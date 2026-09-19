@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.13
+
+- Renamed compound attributes to concise contextual names: `temperature`, `frequency`, `remaining_life`, and `link_speed`.
+- Moved network download and upload rates into the network status attributes as `download` and `upload`.
+- Removed the standalone network download and upload entities.
+- Added upgrade cleanup for the removed network-rate entities.
+- Added regression tests enforcing the approved attribute naming standard.
+
 ## 0.3.12
 
 - Consolidated CPU temperature and frequency into attributes on the CPU usage sensor.

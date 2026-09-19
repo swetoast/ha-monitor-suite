@@ -19,17 +19,15 @@ def test_agent_2_8_3_fixed_sensor_values() -> None:
     descriptions = {description.key: description for description in CORE_SENSORS}
     assert descriptions["cpu_usage"].attributes_fn(STATUS) is None
     cpu_payload = {"cpu": {"usage_percent": 14.8, "temperature_c": 35.3, "frequency_mhz": 1500}}
-    assert descriptions["cpu_usage"].attributes_fn(cpu_payload) == {"temperature_c": 35.3, "frequency_mhz": 1500}
+    assert descriptions["cpu_usage"].attributes_fn(cpu_payload) == {"temperature": 35.3, "frequency": 1500}
     assert "cpu_temperature" not in descriptions
     assert "cpu_frequency" not in descriptions
     assert descriptions["fan_speed"].value_fn(STATUS) == 0
     assert descriptions["fan_speed"].attributes_fn(STATUS) == {"cooling_state": "idle"}
     assert "cooling_state" not in descriptions
     assert descriptions["network_status"].value_fn(STATUS) == "up"
-    assert descriptions["network_status"].attributes_fn(STATUS) == {"interface": "eth0", "link_speed_mbps": 1000}
+    assert descriptions["network_status"].attributes_fn(STATUS) == {"interface": "eth0", "link_speed": 1000, "download": 5531, "upload": 8072}
     assert "network_link_speed" not in descriptions
-    assert descriptions["network_download"].value_fn(STATUS) == 5531
-    assert descriptions["network_upload"].value_fn(STATUS) == 8072
 
 def test_agent_2_8_3_dynamic_storage_rows() -> None:
     raid = _find_named_row(STATUS["raid"]["arrays"], "name", "md0")
@@ -51,11 +49,11 @@ def _smart_entity(row: dict[str, object]) -> MonitorSuiteSmartStatusSensor:
 def test_nvme_smart_status_compounds_temperature_and_life() -> None:
     entity = _smart_entity({"device": "nvme0n1", "status": "healthy", "temperature_c": 19.85, "remaining_life_percent": 98.0})
     assert entity.native_value == "healthy"
-    assert entity.extra_state_attributes == {"temperature_c": 19.85, "remaining_life_percent": 98.0}
+    assert entity.extra_state_attributes == {"temperature": 19.85, "remaining_life": 98.0}
 
 def test_sata_smart_status_omits_missing_remaining_life() -> None:
     entity = _smart_entity({"device": "sda", "status": "healthy", "temperature_c": 29.0})
-    assert entity.extra_state_attributes == {"temperature_c": 29.0}
+    assert entity.extra_state_attributes == {"temperature": 29.0}
 
 def test_smart_attributes_reject_boolean_measurements() -> None:
     entity = _smart_entity({"device": "nvme0n1", "status": "healthy", "temperature_c": True, "remaining_life_percent": False})

@@ -70,12 +70,6 @@
       "fan_speed": {
         "name": "Fan speed"
       },
-      "network_download": {
-        "name": "Network download"
-      },
-      "network_upload": {
-        "name": "Network upload"
-      },
       "disk_read": {
         "name": "Disk read"
       },

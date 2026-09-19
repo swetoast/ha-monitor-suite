@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.12"
+    assert manifest["version"] == "0.3.13"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -86,8 +86,6 @@ def test_sensor_surface_stays_focused() -> None:
         "input_voltage",
         "fan_speed",
         "network_status",
-        "network_download",
-        "network_upload",
         "disk_read",
         "disk_write",
         "last_boot",
@@ -193,9 +191,9 @@ def test_reserved_states_and_compound_entities_are_handled() -> None:
     sensor = (COMPONENT / "sensor.py").read_text()
     assert 'options=["ok", "warning", "critical"]' in sensor
     assert 'options=["up", "down"]' in sensor
-    assert 'attributes["link_speed_mbps"] = link_speed' in sensor
-    assert 'attributes["temperature_c"] = temperature' in sensor
-    assert 'attributes["remaining_life_percent"] = remaining_life' in sensor
+    assert 'attributes["link_speed"] = link_speed' in sensor
+    assert 'attributes["temperature"] = temperature' in sensor
+    assert 'attributes["remaining_life"] = remaining_life' in sensor
     assert "MonitorSuiteSmartTemperatureSensor" not in sensor
     assert "MonitorSuiteSmartLifeSensor" not in sensor
     assert 'registry.async_remove(entity_entry.entity_id)' in sensor
@@ -231,7 +229,7 @@ def test_icons_are_complete_and_dynamic() -> None:
     assert icons["fan_speed"]["range"] == {"1": "mdi:fan"}
     assert icons["storage_usage"]["range"] == {"90": "mdi:alert-circle"}
 
-    obsolete = {"network_link_speed", "smart_temperature", "smart_remaining_life", "cpu_frequency", "cpu_temperature", "cooling_state"}
+    obsolete = {"network_link_speed", "network_download", "network_upload", "smart_temperature", "smart_remaining_life", "cpu_frequency", "cpu_temperature", "cooling_state"}
     assert obsolete.isdisjoint(icons)
 
 
@@ -239,10 +237,61 @@ def test_icons_are_complete_and_dynamic() -> None:
 
 def test_cpu_and_fan_compound_sensor_contract() -> None:
     sensor = (COMPONENT / "sensor.py").read_text()
-    assert 'attributes["temperature_c"] = temperature' in sensor
-    assert 'attributes["frequency_mhz"] = frequency' in sensor
+    assert 'attributes["temperature"] = temperature' in sensor
+    assert 'attributes["frequency"] = frequency' in sensor
     assert 'return {"cooling_state": state}' in sensor
     assert 'key="cpu_frequency"' not in sensor
     assert 'key="cpu_temperature"' not in sensor
     assert 'key="cooling_state"' not in sensor
-    assert '"_cpu_frequency", "_cpu_temperature", "_cooling_state"' in sensor
+    assert '"_cpu_frequency"' in sensor
+    assert '"_cpu_temperature"' in sensor
+    assert '"_cooling_state"' in sensor
+
+
+
+def test_attribute_names_follow_the_approved_standard() -> None:
+    """Reject units, source-field names, and redundant context in attributes."""
+    sensor = (COMPONENT / "sensor.py").read_text()
+    forbidden = {
+        "temperature_c",
+        "frequency_mhz",
+        "remaining_life_percent",
+        "link_speed_mbps",
+        "download_bytes_per_second",
+        "upload_bytes_per_second",
+        "cpu_temperature",
+        "cpu_frequency",
+        "drive_temperature",
+    }
+    exposed_attribute_names = {
+        match.split('["', 1)[1].split('"]', 1)[0]
+        for match in sensor.splitlines()
+        if 'attributes["' in match
+    }
+    assert forbidden.isdisjoint(exposed_attribute_names)
+    forbidden_suffixes = (
+        "_c",
+        "_mhz",
+        "_percent",
+        "_mbps",
+        "_bytes_per_second",
+    )
+    assert not {
+        name for name in exposed_attribute_names if name.endswith(forbidden_suffixes)
+    }
+    redundant_prefixes = ("cpu_", "drive_", "network_", "smart_")
+    assert not {
+        name for name in exposed_attribute_names if name.startswith(redundant_prefixes)
+    }
+    assert {"temperature", "frequency", "remaining_life", "link_speed", "download", "upload"} <= exposed_attribute_names
+
+
+def test_network_is_one_compound_entity() -> None:
+    sensor = (COMPONENT / "sensor.py").read_text()
+    assert 'attributes["link_speed"] = link_speed' in sensor
+    assert 'attributes["download"] = download' in sensor
+    assert 'attributes["upload"] = upload' in sensor
+    assert 'key="network_download"' not in sensor
+    assert 'key="network_upload"' not in sensor
+    assert '"_network_download"' in sensor
+    assert '"_network_upload"' in sensor

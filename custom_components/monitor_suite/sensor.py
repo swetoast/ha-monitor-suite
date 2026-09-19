@@ -78,10 +78,10 @@ def _cpu_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
     attributes: dict[str, Any] = {}
     temperature = cpu.get("temperature_c")
     if isinstance(temperature, Real) and not isinstance(temperature, bool):
-        attributes["temperature_c"] = temperature
+        attributes["temperature"] = temperature
     frequency = cpu.get("frequency_mhz")
     if isinstance(frequency, Real) and not isinstance(frequency, bool):
-        attributes["frequency_mhz"] = frequency
+        attributes["frequency"] = frequency
     return attributes or None
 
 
@@ -118,7 +118,13 @@ def _network_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
         attributes["interface"] = network["interface"]
     link_speed = network.get("link_speed_mbps")
     if isinstance(link_speed, Real) and not isinstance(link_speed, bool):
-        attributes["link_speed_mbps"] = link_speed
+        attributes["link_speed"] = link_speed
+    download = network.get("download_bytes_per_second")
+    if isinstance(download, Real) and not isinstance(download, bool):
+        attributes["download"] = download
+    upload = network.get("upload_bytes_per_second")
+    if isinstance(upload, Real) and not isinstance(upload, bool):
+        attributes["upload"] = upload
     return attributes or None
 
 
@@ -204,22 +210,6 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         attributes_fn=_network_attributes,
     ),
     MonitorSuiteSensorDescription(
-        key="network_download",
-        translation_key="network_download",
-        device_class=SensorDeviceClass.DATA_RATE,
-        native_unit_of_measurement=UnitOfDataRate.BYTES_PER_SECOND,
-        state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: _number(data, ("network", "download_bytes_per_second")),
-    ),
-    MonitorSuiteSensorDescription(
-        key="network_upload",
-        translation_key="network_upload",
-        device_class=SensorDeviceClass.DATA_RATE,
-        native_unit_of_measurement=UnitOfDataRate.BYTES_PER_SECOND,
-        state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda data: _number(data, ("network", "upload_bytes_per_second")),
-    ),
-    MonitorSuiteSensorDescription(
         key="disk_read",
         translation_key="disk_read",
         device_class=SensorDeviceClass.DATA_RATE,
@@ -265,7 +255,14 @@ async def async_setup_entry(
     for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
         unique_id = entity_entry.unique_id
         if unique_id.endswith(
-            ("_network_link_speed", "_cpu_frequency", "_cpu_temperature", "_cooling_state")
+            (
+                "_network_link_speed",
+                "_network_download",
+                "_network_upload",
+                "_cpu_frequency",
+                "_cpu_temperature",
+                "_cooling_state",
+            )
         ) or (
             "_smart_" in unique_id
             and unique_id.endswith(("_temperature", "_remaining_life"))
@@ -506,9 +503,9 @@ class MonitorSuiteSmartStatusSensor(MonitorSuiteSmartSensor):
         attributes: dict[str, Any] = {}
         temperature = row.get("temperature_c")
         if isinstance(temperature, Real) and not isinstance(temperature, bool):
-            attributes["temperature_c"] = temperature
+            attributes["temperature"] = temperature
         remaining_life = row.get("remaining_life_percent")
         if isinstance(remaining_life, Real) and not isinstance(remaining_life, bool):
-            attributes["remaining_life_percent"] = remaining_life
+            attributes["remaining_life"] = remaining_life
         return attributes or None
 
