@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.9"
+    assert manifest["version"] == "0.3.10"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -204,3 +204,41 @@ def test_reserved_states_and_compound_entities_are_handled() -> None:
     assert "MonitorSuiteSmartTemperatureSensor" not in sensor
     assert "MonitorSuiteSmartLifeSensor" not in sensor
     assert 'registry.async_remove(entity_entry.entity_id)' in sensor
+
+
+def test_icons_are_complete_and_dynamic() -> None:
+    icons = json.loads((COMPONENT / "icons.json").read_text())["entity"]["sensor"]
+
+    assert icons["status"]["state"] == {
+        "ok": "mdi:check-circle",
+        "warning": "mdi:alert-circle",
+        "critical": "mdi:alert-octagon",
+    }
+    assert icons["cooling_state"]["state"] == {
+        "active": "mdi:fan",
+        "idle": "mdi:fan-off",
+    }
+    assert icons["network_status"]["state"] == {
+        "up": "mdi:lan-connect",
+        "down": "mdi:lan-disconnect",
+    }
+    assert icons["raid_status"]["state"] == {
+        "healthy": "mdi:harddisk",
+        "degraded": "mdi:alert-circle",
+        "failed": "mdi:harddisk-remove",
+        "recovering": "mdi:progress-wrench",
+        "resyncing": "mdi:sync",
+        "checking": "mdi:magnify-scan",
+        "reshaping": "mdi:swap-horizontal",
+    }
+    assert icons["smart_status"]["state"] == {
+        "healthy": "mdi:harddisk",
+        "warning": "mdi:alert-circle",
+        "failed": "mdi:harddisk-remove",
+        "testing": "mdi:magnify-scan",
+    }
+    assert icons["fan_speed"]["range"] == {"1": "mdi:fan"}
+    assert icons["storage_usage"]["range"] == {"90": "mdi:alert-circle"}
+
+    obsolete = {"network_link_speed", "smart_temperature", "smart_remaining_life"}
+    assert obsolete.isdisjoint(icons)

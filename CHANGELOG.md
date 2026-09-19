@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.10
+
+- Fixed the icon regression introduced by the compound sensor update.
+- Restored explicit dynamic icons for every supported system, cooling, network, RAID, and SMART state.
+- Added explicit healthy and testing icons for compound SMART status entities.
+- Replaced the misleading SMART testing `harddisk-plus` icon with `magnify-scan`.
+- Retained numeric range icons for fan speed and storage usage.
+- Added regression tests for the complete icon contract.
+
 ## 0.3.9
 
 - Consolidated each physical drive into one SMART status entity.

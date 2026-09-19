@@ -6,7 +6,7 @@
         "state": {
           "ok": "mdi:check-circle",
           "warning": "mdi:alert-circle",
-          "critical": "mdi:close-circle"
+          "critical": "mdi:alert-octagon"
         }
       },
       "cpu_usage": {
@@ -57,9 +57,9 @@
       "raid_status": {
         "default": "mdi:harddisk",
         "state": {
-          "healthy": "mdi:check-circle",
+          "healthy": "mdi:harddisk",
           "degraded": "mdi:alert-circle",
-          "failed": "mdi:close-circle",
+          "failed": "mdi:harddisk-remove",
           "recovering": "mdi:progress-wrench",
           "resyncing": "mdi:sync",
           "checking": "mdi:magnify-scan",
@@ -69,13 +69,14 @@
       "smart_status": {
         "default": "mdi:harddisk",
         "state": {
+          "healthy": "mdi:harddisk",
           "warning": "mdi:alert-circle",
           "failed": "mdi:harddisk-remove",
-          "testing": "mdi:harddisk-plus"
+          "testing": "mdi:magnify-scan"
         }
       },
       "cooling_state": {
-        "default": "mdi:fan-off",
+        "default": "mdi:fan-alert",
         "state": {
           "active": "mdi:fan",
           "idle": "mdi:fan-off"
