@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.2"
+    assert manifest["version"] == "0.3.3"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -45,7 +45,7 @@ def test_options_are_isolated_and_meaningful() -> None:
     options = (COMPONENT / "options.py").read_text()
     flow = (COMPONENT / "config_flow.py").read_text()
     coordinator = (COMPONENT / "coordinator.py").read_text()
-    assert "class MonitorSuiteOptionsFlow(OptionsFlowWithReload)" in options
+    assert "class MonitorSuiteOptionsFlow(OptionsFlow)" in options
     assert "CONF_UPDATE_INTERVAL" in options
     assert "MIN_UPDATE_INTERVAL" in options
     assert "MAX_UPDATE_INTERVAL" in options

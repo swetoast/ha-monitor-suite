@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.3
+
+- Fixed the config flow import failure on Home Assistant 2025.12 by replacing the unavailable `OptionsFlowWithReload` class with `OptionsFlow`.
+- Added a config entry update listener so saved options still reload the integration.
+
 ## 0.3.2
 
 - Fixed config flow and options flow loading on Home Assistant 2025.12 by replacing the removed `FlowResult` import with `ConfigFlowResult`.
