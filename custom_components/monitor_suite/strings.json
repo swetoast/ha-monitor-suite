@@ -69,7 +69,7 @@
         "name": "Storage usage"
       },
       "power": {
-        "name": "Power"
+        "name": "Estimated power"
       },
       "input_voltage": {
         "name": "Input voltage"

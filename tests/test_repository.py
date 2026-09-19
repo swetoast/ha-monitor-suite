@@ -35,7 +35,7 @@ def test_versions_and_repository_metadata() -> None:
         "homeassistant": "2025.12.2",
         "hacs": "2.0.0",
     }
-    assert manifest["version"] == "0.3.4"
+    assert manifest["version"] == "0.3.5"
     assert manifest["domain"] == "monitor_suite"
     assert manifest["requirements"] == []
     assert manifest["codeowners"] == ["@swetoast"]
@@ -45,7 +45,7 @@ def test_options_are_isolated_and_meaningful() -> None:
     options = (COMPONENT / "options.py").read_text()
     flow = (COMPONENT / "config_flow.py").read_text()
     coordinator = (COMPONENT / "coordinator.py").read_text()
-    assert "class MonitorSuiteOptionsFlow(OptionsFlowWithReload)" in options
+    assert "class MonitorSuiteOptionsFlow(OptionsFlow)" in options
     assert "CONF_UPDATE_INTERVAL" in options
     assert "MIN_UPDATE_INTERVAL" in options
     assert "MAX_UPDATE_INTERVAL" in options
@@ -173,3 +173,20 @@ def test_behavior_test_modules_present() -> None:
         "test_const.py",
     ):
         assert (ROOT / "tests" / filename).is_file()
+
+
+def test_sensor_presentation_and_raid_attribute_contract() -> None:
+    sensor = (COMPONENT / "sensor.py").read_text()
+    strings = json.loads((COMPONENT / "strings.json").read_text())
+    translations = json.loads((COMPONENT / "translations" / "en.json").read_text())
+
+    assert 'suggested_display_precision=0' in sensor
+    assert sensor.count('suggested_display_precision=1') >= 3
+    assert 'suggested_display_precision=2' in sensor
+    assert 'suggested_display_precision=3' in sensor
+    assert '"smart_status",' not in sensor
+    assert strings["entity"]["sensor"]["power"]["name"] == "Estimated power"
+    assert (
+        translations["entity"]["sensor"]["power"]["name"]
+        == "Estimated power"
+    )

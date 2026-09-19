@@ -143,7 +143,7 @@ CORE_SENSORS: tuple[MonitorSuiteSensorDescription, ...] = (
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.WATT,
         state_class=SensorStateClass.MEASUREMENT,
-        suggested_display_precision=3,
+        suggested_display_precision=2,
         value_fn=lambda data: _number(data, ("power", "value_w")),
         attributes_fn=_power_attributes,
     ),
@@ -407,7 +407,6 @@ class MonitorSuiteRaidSensor(MonitorSuiteBaseSensor):
                 "expected_members",
                 "failed_members",
                 "redundancy",
-                "smart_status",
             )
             if row.get(key) is not None
         }

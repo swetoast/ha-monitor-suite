@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 import voluptuous as vol
-from homeassistant.config_entries import ConfigFlowResult, OptionsFlowWithReload
+from homeassistant.config_entries import ConfigFlowResult, OptionsFlow
 from homeassistant.helpers.selector import (
     NumberSelector,
     NumberSelectorConfig,
@@ -20,7 +20,7 @@ from .const import (
 )
 
 
-class MonitorSuiteOptionsFlow(OptionsFlowWithReload):
+class MonitorSuiteOptionsFlow(OptionsFlow):
     """Manage Monitor Suite options and reload after changes."""
 
     async def async_step_init(

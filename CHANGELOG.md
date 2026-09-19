@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.5
+
+- Preserved the config-flow schema serialization fix from 0.3.4.
+- Renamed the internal-rail power estimate to `Estimated power`.
+- Set its suggested display precision to two decimal places.
+- Removed the ambiguous aggregated `smart_status` attribute from RAID status sensors; per-device SMART sensors remain authoritative.
+- Added regression checks for frontend schema serialization, sensor precision, power naming, and RAID attributes.
+
 ## 0.3.4
 
 - Fixed the config flow HTTP 500 caused by the non-serializable `str.strip` validator in the host schema.
