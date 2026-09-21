@@ -87,8 +87,21 @@ def _fan_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
     cooling = data.get("cooling")
     if not isinstance(cooling, dict):
         return None
+
+    attributes: dict[str, Any] = {}
     state = cooling.get("state")
-    return {"cooling_state": state} if state in ("idle", "active") else None
+    if state in ("idle", "active"):
+        attributes["cooling_state"] = state
+
+    for api_key, attribute_name in (
+        ("fan_count", "fan_count"),
+        ("active_fan_count", "active_fan_count"),
+    ):
+        value = cooling.get(api_key)
+        if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+            attributes[attribute_name] = value
+
+    return attributes or None
 
 
 def _status_attributes(data: dict[str, Any]) -> dict[str, Any] | None:
@@ -327,7 +340,7 @@ class MonitorSuiteBaseSensor(CoordinatorEntity[MonitorSuiteCoordinator], SensorE
 
     @property
     def device_info(self) -> DeviceInfo:
-        """Return the single monitored Raspberry Pi device."""
+        """Return the single monitored Linux device."""
         device = self.coordinator.data.get("device", {})
         operating_system = device.get("operating_system")
         kernel_version = device.get("kernel_version")
